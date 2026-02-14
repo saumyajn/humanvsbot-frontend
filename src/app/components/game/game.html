@@ -1,0 +1,37 @@
+<div class="chat-area" #scrollContainer>
+    @for (msg of gameService.messages(); track msg.timestamp) {
+
+    @if (msg.sender === 'system') {
+    <div class="system-message">
+        {{ msg.text }}
+    </div>
+    }
+    @else {
+    <div class="message-row" [class.my-row]="msg.sender === 'me'">
+
+        @if (msg.sender !== 'me') {
+        <img class="avatar" [src]="gameService.opponentAvatarUrl()" alt="Opponent">
+        }
+
+        <div class="bubble-container">
+            <div class="bubble">
+                {{ msg.text }}
+            </div>
+            <span class="time">{{ msg.timestamp | date:'shortTime' }}</span>
+        </div>
+
+        @if (msg.sender === 'me') {
+        <img class="avatar" [src]="gameService.myAvatarUrl()" alt="Me">
+        }
+    </div>
+    }
+    }
+</div>
+
+<div class="input-area">
+    <input #chatInput type="text" [(ngModel)]="messageInput" (keyup.enter)="handleSendMessage()"
+        placeholder="Type a message..." autofocus />
+    <button (click)="handleSendMessage()" [disabled]="!messageInput.trim()">
+        Send
+    </button>
+</div>

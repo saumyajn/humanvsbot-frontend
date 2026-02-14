@@ -1,0 +1,132 @@
+/* instruction.component.scss */
+
+:host {
+    display: block;
+    height: 100%; // Fill the parent (chat-container)
+    width: 100%;
+}
+
+.top-actions {
+    margin-bottom: 1rem;
+    padding: 5px;
+    justify-items: right;
+
+    .minimal-back {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        padding: 0;
+
+        &:hover {
+            color: #00f260;
+        }
+
+        .icon {
+            font-size: 1.2rem;
+        }
+    }
+}
+
+.info-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--bg-gradient);
+
+    .instructions-content {
+        flex: 1;
+        overflow-y: auto; // Enables scrolling for this section only
+        padding: 1rem 0 120px 0; // Bottom padding so the button doesn't hide text
+
+        // Smooth scrolling for a premium feel
+        -webkit-overflow-scrolling: touch;
+
+        // Hide scrollbar for a cleaner mobile look (optional)
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+}
+
+.mission-brief {
+    padding: 0 2rem 1.5rem;
+    text-align: left;
+
+    h3 {
+        color: #00f260; // Cyber green
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 0.5rem;
+    }
+
+    p {
+        color: var(--text-main);
+        font-size: 1rem;
+        line-height: 1.5;
+        opacity: 0.9;
+    }
+}
+
+.instructions-content {
+    padding-bottom: 100px; // Space for the fixed button at bottom
+}
+
+.instr-card {
+    margin: 0 1.5rem 1rem;
+    display: flex;
+    gap: 15px;
+    padding: 1.2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border-left: 4px solid #007bff;
+
+    .num {
+        font-family: 'Courier New', Courier, monospace;
+        color: #007bff;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    .text {
+        h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.05rem;
+            color: #fff;
+        }
+
+        p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+    }
+}
+
+.primary-btn {
+    position: sticky;
+    bottom: 20px;
+    margin: 0 2rem 2rem;
+    padding: 1.2rem;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    box-shadow: 0 10px 20px rgba(0, 123, 255, 0.3);
+    cursor: pointer;
+    &:hover {
+           background: #0056b3;
+           box-shadow: 0 1px 15px rgba(0, 123, 255, 0.5);
+        }
+}

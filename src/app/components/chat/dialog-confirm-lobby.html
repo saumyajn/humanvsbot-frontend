@@ -1,0 +1,8 @@
+<h2 mat-dialog-title>End Session?</h2>
+<mat-dialog-content>
+  <p>Are you sure you want to leave the interrogation? Your progress will be lost.</p>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="dialogRef.close(false)">CANCEL</button>
+  <button mat-button color="warn" [mat-dialog-close]="true">LEAVE</button>
+</mat-dialog-actions>

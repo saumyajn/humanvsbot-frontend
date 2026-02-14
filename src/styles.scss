@@ -1,0 +1,43 @@
+:root {
+  /* Default: Dark Theme (Cyberpunk) */
+  --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  --header-bg: rgba(255, 255, 255, 0.05);
+  --text-main: #ffffff;
+  --text-muted: #a0a0a0;
+  --bubble-me: #007bff;
+  --bubble-me-text: #ffffff;
+  --bubble-other: rgba(255, 255, 255, 0.1);
+  --bubble-other-text: #eeeeee;
+  --input-bg: #1a1a2e;
+  --input-border: rgba(255, 255, 255, 0.1);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg-gradient: linear-gradient(135deg, #f0f2f5 0%, #ffffff 100%);
+    --header-bg: #008069;
+    --text-main: #333333;
+    --text-muted: #666666;
+    --bubble-me: #d9fdd3;
+    --bubble-me-text: #111b21;
+    --bubble-other: #ffffff;
+    --bubble-other-text: #111b21;
+    --input-bg: #ffffff;
+    --input-border: #ddd;
+  }
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden; // Prevents accidental "bounce" scrolling on mobile
+  background-color: #1a1a2e; // Matches your theme so there's no "white flash"
+}
+
+// 2. Ensure the Angular root tag fills the screen
+app-root {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
