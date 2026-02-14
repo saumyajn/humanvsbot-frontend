@@ -18,7 +18,6 @@ import { MatButtonModule } from '@angular/material/button';
 @Component({
   selector: 'app-chat',
   standalone: true,
-  // We add DialogConfirmLobby to the imports of Chat so it can be used by MatDialog
   imports: [
     CommonModule, 
     FormsModule, 
