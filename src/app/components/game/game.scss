@@ -1,100 +1,207 @@
-/* src/app/components/game/game.component.scss */
+// Unified Cyber-Noir Palette
+$primary-cyan: #00f2ff;
+$danger-red: #ff4d4d;
+$dark-bg: #0a0b10;
+$surface-bg: #161821;
+$text-dim: #a0a0a0;
+$human-green: #00ff88;
+$bot-purple: #bd00ff;
 
-:host {
+.game-wrapper {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  height: 100%; 
-  overflow: hidden; // The component itself doesn't scroll
-}
-.system-message {
-  text-align: center;
-  padding: 10px;
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  margin-bottom: 15px;
-  border-radius: 8px;
-}
-.chat-area {
-  flex: 1;
-  overflow-y: auto; // This allows the messages to scroll
-  padding: 1.5rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  
-  /* Smooth scrolling for mobile */
-  -webkit-overflow-scrolling: touch;
+  height: 100vh; // Forces entire component to screen height
+  width: 100%;
+  background-color: $dark-bg;
+  color: white;
+  position: relative;
+  overflow: hidden;
 
-  /* Custom Scrollbar for Dark Theme */
-  &::-webkit-scrollbar { width: 4px; }
-  &::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
-}
-
-.message-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 10px;
-  margin-bottom: 15px;
-  max-width: 85%;
-  align-self: flex-start;
-
-  .avatar {
-    width: 36px; height: 36px; border-radius: 50%;
-    border: 2px solid white;
-    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.1));
+  // --- Header ---
+  .header {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    background: rgba($surface-bg, 0.8);
+    border-bottom: 1px solid rgba($primary-cyan, 0.2);
+    font-family: 'Share Tech Mono', monospace;
+    color: $primary-cyan;
+    font-size: 0.9rem;
+    z-index: 10;
   }
 
-  .bubble {
-    padding: 12px 16px;
-    background: var(--bubble-other);
-    color: var(--bubble-other-text);
-    border-radius: 18px 18px 18px 4px;
-    font-size: 0.95rem;
-  }
+  // --- Scrollable Chat Area ---
+  .chat-area {
+    flex: 1; // Takes up all remaining space between header and input
+    overflow-y: auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-bottom: 2rem; // Extra breathing room before input bar
 
-  &.my-row {
-    align-self: flex-end;
-    flex-direction: row; // Keeps icon on right
-    .bubble {
-      background: var(--bubble-me);
-      color: var(--bubble-me-text);
-      border-radius: 18px 18px 4px 18px;
+    &::-webkit-scrollbar { width: 4px; }
+    &::-webkit-scrollbar-thumb { background: rgba($primary-cyan, 0.2); }
+
+    .msg-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      max-width: 85%;
+
+      &.me {
+        align-self: flex-end;
+        flex-direction: row; // Avatar on right
+      }
+
+      &.them {
+        align-self: flex-start;
+      }
+
+      .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 4px;
+        border: 1px solid rgba($primary-cyan, 0.3);
+        background: $surface-bg;
+      }
+
+      .bubble {
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        position: relative;
+
+        small {
+          display: block;
+          font-size: 0.7rem;
+          margin-top: 5px;
+          opacity: 0.6;
+        }
+      }
+
+      &.me .bubble {
+        background: $primary-cyan;
+        color: $dark-bg;
+        font-weight: 500;
+        border-bottom-right-radius: 2px;
+      }
+
+      &.them .bubble {
+        background: $surface-bg;
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom-left-radius: 2px;
+      }
     }
   }
-}
 
-.input-area {
-  padding: 1rem;
-  background: var(--header-bg);
-  display: flex;
-  gap: 10px;
-  border-top: 1px solid var(--input-border);
-  padding-bottom: max(1rem, env(safe-area-inset-bottom)); // Support for iPhone notches
+  // --- Bottom-Anchored Input Bar ---
+  .input-bar {
+    padding: 1.5rem 2rem;
+    background: $surface-bg;
+    border-top: 1px solid rgba($primary-cyan, 0.2);
+    display: flex;
+    gap: 1rem;
+    align-items: center;
 
-  input {
-    flex: 1;
-    padding: 0.8rem 1.2rem;
-    background: var(--input-bg);
-    border: 1px solid var(--input-border);
-    color: var(--text-main);
-    border-radius: 25px;
-    outline: none;
-    font-size: 1rem;
+    input {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba($primary-cyan, 0.3);
+      padding: 14px 20px;
+      border-radius: 4px;
+      color: white;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.3s;
+
+      &:focus {
+        border-color: $primary-cyan;
+      }
+    }
+
+    button {
+      background: $primary-cyan;
+      color: $dark-bg;
+      border: none;
+      padding: 0 25px;
+      height: 48px;
+      border-radius: 4px;
+      font-weight: 800;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover:not(:disabled) {
+        box-shadow: 0 0 15px rgba($primary-cyan, 0.5);
+        transform: translateY(-1px);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        filter: grayscale(1);
+      }
+    }
   }
 
-  button {
-    background: #007bff;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 45px; height: 45px;
+  // --- Decision & Result Overlays ---
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba($dark-bg, 0.9);
+    backdrop-filter: blur(10px);
     display: flex;
-    align-items: center;
     justify-content: center;
-    cursor: pointer;
-    
-    &:disabled { opacity: 0.5; }
+    align-items: center;
+    z-index: 100;
+
+    .modal {
+      background: $surface-bg;
+      padding: 3rem;
+      border-radius: 4px;
+      border: 1px solid $primary-cyan;
+      text-align: center;
+      width: 90%;
+      max-width: 450px;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+
+      h2 { color: $primary-cyan; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem; }
+      p { color: $text-dim; margin-bottom: 2rem; }
+
+      .btn-group {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+
+        button {
+          padding: 1rem;
+          border: none;
+          font-weight: bold;
+          cursor: pointer;
+          letter-spacing: 1px;
+
+          &.human { background: $human-green; color: #000; }
+          &.bot { background: $bot-purple; color: #fff; }
+        }
+      }
+
+      &.result {
+        h1 { font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem; }
+        h1.correct { color: $human-green; }
+        h1:not(.correct) { color: $danger-red; }
+        
+        button.primary-btn {
+          margin-top: 2rem;
+          background: white;
+          color: black;
+          padding: 0.8rem 2rem;
+          border: none;
+          font-weight: bold;
+          cursor: pointer;
+        }
+      }
+    }
   }
 }

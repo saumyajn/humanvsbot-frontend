@@ -1,4 +1,5 @@
 import { Component, output } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-instruction',
@@ -7,5 +8,9 @@ import { Component, output } from '@angular/core';
   styleUrl: './instruction.scss',
 })
 export class Instruction {
-  close = output<void>();
+  constructor(private router: Router) { }
+
+  close() {
+    this.router.navigate(['/']); // Navigate back to home
+  }
 }

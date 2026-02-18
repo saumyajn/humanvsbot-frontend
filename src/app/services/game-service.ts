@@ -1,122 +1,133 @@
-// src/app/services/game-service.ts
-
-import { Injectable, signal, effect, DestroyRef, inject } from '@angular/core';
+import { effect, EventEmitter, Injectable, signal, inject, DestroyRef, computed } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
-import { ConnectionStatus, Message, GAME_LIMITS } from '../models/game.types';
+import { ApiService } from './api-service';
+
+export interface ChatMessage {
+  text: string;
+  sender: 'me' | 'opponent' | 'system';
+  timestamp: number;
+}
 
 @Injectable({ providedIn: 'root' })
 export class GameService {
+  private socket: Socket;
+  private apiService = inject(ApiService);
   private destroyRef = inject(DestroyRef);
-  private socket!: Socket;
+  private readonly API_URL = 'http://localhost:3000';
 
   // --- SIGNALS ---
-  public connectionStatus = signal<ConnectionStatus>('IDLE');
-  public messages = signal<Message[]>([]);
-  public gameTimer = signal<number>(GAME_LIMITS.TOTAL_TIME_SECONDS);
-  public messageCount = signal<number>(0);
+  public connectionStatus = signal<'DISCONNECTED' | 'SEARCHING' | 'MATCHED'>('DISCONNECTED');
+  public messages = signal<ChatMessage[]>([]);
+  public messageCount = computed(() => this.messages().filter(m => m.sender !== 'system').length);
+  public gameTimer = signal<number>(120);
   public isGameOver = signal<boolean>(false);
-  public searchSeconds = signal<number>(0);
-  
+  public searchSeconds = signal<number>(10);
+  public roomId = signal<string | null>(null);
+  public myAvatarUrl = signal<string>('');
+  public opponentAvatarUrl = signal<string>('');
+
   private gameInterval: any;
   private searchInterval: any;
+  public onMatchFound = new EventEmitter<void>();
 
   constructor() {
-    this.socket = io('http://localhost:3000'); // Replace with your Node.js URL
+    this.socket = io(this.API_URL, { autoConnect: true });
     this.setupSocketListeners();
+    this.destroyRef.onDestroy(() => this.cleanup());
 
-    // watchdog for game-over conditions
+    // Auto-end game if timer hits 0
     effect(() => {
-      if (this.gameTimer() <= 0 || this.messageCount() >= GAME_LIMITS.MAX_MESSAGES) {
+      if (this.gameTimer() <= 0 && this.connectionStatus() === 'MATCHED' && !this.isGameOver()) {
         this.endGame();
       }
     });
-
-    this.destroyRef.onDestroy(() => this.cleanup());
   }
 
   private setupSocketListeners() {
-    this.socket.on('match_found', (data: any) => {
-      this.connectionStatus.set('MATCHED');
+    this.socket.on('match_found', (data) => {
       this.stopSearchTimer();
-      this.startGameTimer(); // Start 2-min limit
-      this.addSystemMessage('Secure connection established. Start interrogation.');
+      this.roomId.set(data.roomId);
+      this.connectionStatus.set('MATCHED');
+      this.startGame();
+      this.onMatchFound.emit();
     });
 
-    this.socket.on('message', (msg: Message) => {
-      this.messages.update(prev => [...prev, { ...msg, sender: 'opponent' }]);
-      this.incrementMessages();
+    this.socket.on('new_message', (msg: any) => {
+      if (msg.sender !== 'me') {
+        this.addMessage(msg.text, 'opponent');
+        this.checkMessageLimit();
+      }
     });
+  }
 
-    this.socket.on('opponent_left', () => {
-      this.addSystemMessage('The subject has disconnected.');
-      this.endGame();
-    });
+  // --- LOBBY ACTIONS ---
+  public findMatch() {
+    this.connectionStatus.set('SEARCHING');
+    this.searchSeconds.set(10);
+    this.socket.emit('find_match');
+    this.searchInterval = setInterval(() => this.searchSeconds.update(s => s - 1), 1000);
+  }
+
+  public cancelSearch() {
+    this.stopSearchTimer();
+    this.socket.emit('cancel_search');
+    this.connectionStatus.set('DISCONNECTED');
   }
 
   // --- GAME ACTIONS ---
-  public findMatch() {
-    this.connectionStatus.set('SEARCHING');
-    this.startSearchTimer();
-    this.socket.emit('find_match');
-  }
-
-  public sendMessage(text: string) {
-    const msg: Message = { text, sender: 'me', timestamp: Date.now() };
-    this.messages.update(prev => [...prev, msg]);
-    this.socket.emit('send_message', msg);
-    this.incrementMessages(); // Track toward 10-message limit
-  }
-
-  public leaveGame() {
-    this.socket.emit('leave_game');
-    this.executeExitCleanup();
-  }
-
-  // --- INTERNAL UTILITIES ---
-  private startGameTimer() {
-    this.gameTimer.set(GAME_LIMITS.TOTAL_TIME_SECONDS);
+  private startGame() {
+    this.messages.set([]);
     this.isGameOver.set(false);
-    clearInterval(this.gameInterval);
+    this.gameTimer.set(120);
+    this.myAvatarUrl.set(this.apiService.getAvatarUrl('me' + Date.now()));
+    this.opponentAvatarUrl.set(this.apiService.getAvatarUrl('opp' + Date.now()));
+    
     this.gameInterval = setInterval(() => {
       this.gameTimer.update(v => v > 0 ? v - 1 : 0);
     }, 1000);
   }
 
-  private incrementMessages() {
-    this.messageCount.update(n => n + 1);
+  public sendMessage(text: string) {
+    if (!text.trim() || this.isGameOver()) return;
+    this.socket.emit('send_message', { roomId: this.roomId(), text });
+    this.addMessage(text, 'me');
+    this.checkMessageLimit();
+  }
+
+  private checkMessageLimit() {
+    if (this.messageCount() >= 10) this.endGame();
   }
 
   private endGame() {
     clearInterval(this.gameInterval);
     this.isGameOver.set(true);
-    this.addSystemMessage('Session terminated. Cast your verdict.');
+    this.addMessage('Session expired. Cast your verdict.', 'system');
   }
 
-  private executeExitCleanup() {
-    this.connectionStatus.set('IDLE');
-    this.messages.set([]);
-    this.messageCount.set(0);
-    this.isGameOver.set(false);
+  public leaveGame() {
+    this.socket.emit('leave_game', this.roomId());
+    this.cleanupGame();
+  }
+
+  private cleanupGame() {
     clearInterval(this.gameInterval);
-    this.stopSearchTimer();
-  }
-
-  private startSearchTimer() {
-    this.searchSeconds.set(0);
-    this.searchInterval = setInterval(() => this.searchSeconds.update(s => s + 1), 1000);
+    this.connectionStatus.set('DISCONNECTED');
+    this.isGameOver.set(false);
+    this.messages.set([]);
+    this.roomId.set(null);
   }
 
   private stopSearchTimer() {
-    clearInterval(this.searchInterval);
+    if (this.searchInterval) clearInterval(this.searchInterval);
   }
 
-  private addSystemMessage(text: string) {
-    this.messages.update(prev => [...prev, { text, sender: 'system', timestamp: Date.now() }]);
+  private addMessage(text: string, sender: 'me' | 'opponent' | 'system') {
+    this.messages.update(m => [...m, { text, sender, timestamp: Date.now() }]);
   }
 
   private cleanup() {
+    this.stopSearchTimer();
     clearInterval(this.gameInterval);
-    clearInterval(this.searchInterval);
     this.socket.disconnect();
   }
 }

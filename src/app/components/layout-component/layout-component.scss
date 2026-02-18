@@ -1,0 +1,108 @@
+
+:host {
+  display: block;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; // Critical for mobile "native" feel
+}
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background: var(--bg-gradient); // Using the CSS variables we defined
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  background: rgba(26, 26, 46, 0.8); 
+  backdrop-filter: blur(15px); // Modern frosted glass effect
+  -webkit-backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 1000;
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .logo-icon {
+      font-size: 1.5rem;
+      filter: drop-shadow(0 0 5px #00f260);
+    }
+
+    .title-group {
+      display: flex;
+      flex-direction: column;
+
+      h1 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        background: linear-gradient(to right, #ffffff, #a0a0a0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+    }
+  }
+
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 2px;
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #444;
+
+      &.searching { 
+        background: #ff9f43; 
+        box-shadow: 0 0 8px #ff9f43;
+        animation: pulse-glow 1.5s infinite; 
+      }
+      &.matched { 
+        background: #00f260; 
+        box-shadow: 0 0 8px #00f260;
+      }
+    }
+
+    .status-text {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+  }
+}
+
+.exit-btn {
+  background: rgba(255, 71, 87, 0.15);
+  color: #ff4757;
+  border: 1px solid rgba(255, 71, 87, 0.3);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  cursor: pointer;
+  &:hover { background: #ff4757; color: white; }
+}
+
+
+@keyframes pulse-glow {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.5; }
+}
+

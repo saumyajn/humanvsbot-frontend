@@ -1,8 +1,17 @@
 import { Routes } from '@angular/router';
-import { Chat } from './components/chat/chat'
+import { Home } from './components/home/home'
 import { Instruction } from './components/instruction/instruction';
+import { LayoutComponent } from './components/layout-component/layout-component';
+import { Game } from './components/game/game';
 
 export const routes: Routes = [
-    { path: '', component: Chat },
-    { path: 'how-to-play', component: Instruction }
+  {
+    path: '',
+    component: LayoutComponent,
+    children: [
+      { path: '', component: Home }, // Default child
+      { path: 'how-to-play', component: Instruction },
+      { path: 'humanvsbot', component: Game }
+    ]
+  }
 ];
