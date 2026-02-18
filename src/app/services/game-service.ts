@@ -19,7 +19,7 @@ export class GameService {
   public connectionStatus = signal<'DISCONNECTED' | 'SEARCHING' | 'MATCHED'>('DISCONNECTED');
   public messages = signal<ChatMessage[]>([]);
   public messageCount = computed(() => this.messages().filter(m => m.sender !== 'system').length);
-  public gameTimer = signal<number>(120);
+  public gameTimer = signal<number>(12000);
   public isGameOver = signal<boolean>(false);
   public searchSeconds = signal<number>(10);
   public roomId = signal<string | null>(null);
@@ -78,7 +78,7 @@ export class GameService {
   private startGame() {
     this.messages.set([]);
     this.isGameOver.set(false);
-    this.gameTimer.set(120);
+    this.gameTimer.set(12000);
     this.myAvatarUrl.set(this.apiService.getAvatarUrl('me' + Date.now()));
     this.opponentAvatarUrl.set(this.apiService.getAvatarUrl('opp' + Date.now()));
     

@@ -1,34 +1,41 @@
 <div class="game-wrapper">
   @if (gameService.connectionStatus() === 'MATCHED') {
-  <div class="header">
-    <span>⏱ {{ gameService.gameTimer() }}s</span>
+  <div class="timer-info">
+    <span>⏱ {{ gameService.gameTimer() }}s</span> 
     <span>💬 {{ gameService.messageCount() }}/10</span>
   </div>
   }
 
-  <div class="chat-area" #scrollContainer>
-    @for (msg of gameService.messages(); track msg.timestamp) {
-    <div [class]="msg.sender === 'system' ? 'system-msg' : 'msg-row ' + (msg.sender === 'me' ? 'me' : 'them')">
+<div class="chat-area" #scrollContainer style="overflow-y: auto">
+  @for (msg of gameService.messages(); track msg.timestamp) {
+    <div [class]="msg.sender === 'system' ? 'system-msg-row' : 'msg-row ' + (msg.sender === 'me' ? 'me' : 'them')">
+      
       @if (msg.sender === 'opponent') {
-      <img [src]="gameService.opponentAvatarUrl()" class="avatar">
+        <div class="avatar-container">
+          <img [src]="gameService.opponentAvatarUrl()" class="avatar" alt="Bot">
+        </div>
       }
 
-      <div class="bubble">
-        {{ msg.text }}
-        <small>{{ msg.timestamp | date:'shortTime' }}</small>
+      <div class="bubble-wrapper">
+        <div class="bubble">
+          {{ msg.text }}
+          <span class="timestamp">{{ msg.timestamp | date:'shortTime' }}</span>
+        </div>
       </div>
 
       @if (msg.sender === 'me') {
-      <img [src]="gameService.myAvatarUrl()" class="avatar">
+        <div class="avatar-container">
+          <img [src]="gameService.myAvatarUrl()" class="avatar" alt="User">
+        </div>
       }
     </div>
-    }
-  </div>
+  }
+</div>
 
   @if (!gameService.isGameOver() && gameService.connectionStatus() === 'MATCHED') {
   <div class="input-bar">
-    <input #chatInput [(ngModel)]="messageInput" (keyup.enter)="handleSendMessage()" placeholder="Expose the bot...">
-    <button (click)="handleSendMessage()" [disabled]="!messageInput.trim()">Send</button>
+    <input class="input-box" #chatInput [(ngModel)]="messageInput" (keyup.enter)="handleSendMessage()" (keydown.enter)="$event.preventDefault()" placeholder="Expose the bot...">
+    <button class="send-btn" (click)="handleSendMessage()" [disabled]="!messageInput.trim()">Send</button>
   </div>
   }
   @else {

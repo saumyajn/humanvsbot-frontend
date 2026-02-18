@@ -1,33 +1,28 @@
-@if (showHowToPlay()) {
-  <app-instruction (close)="toggleHowToPlay(false)"></app-instruction>
-}
-@else {
-  <div class="lobby-screen">
-    <div class="radar-container" [class.scanning]="gameService.connectionStatus() === 'SEARCHING'">
-      <div class="radar-sweep"></div>
-      <div class="radar-dot"></div>
-    </div>
-
-    <h1>Human Or Bot Test</h1>
-    <div class="intro-text">
-      <p>Identify the Human. Expose the AI.</p>
-      <p class="highlight">Think you can tell the difference?</p>
-    </div>
-
-    <button class="play-btn" (click)="gameService.findMatch()"
-      [disabled]="gameService.connectionStatus() === 'SEARCHING'">
-      @if (gameService.connectionStatus() === 'SEARCHING') {
-        <span class="countdown">{{ gameService.searchSeconds() }}</span>
-        <span class="sub-text">SCANNING...</span>
-      } @else {
-        START INTERROGATION
-      }
-    </button>
-
-    <button class="how-to-btn" (click)="navigateToHowToPlay()">How to Play</button>
-
-    @if (gameService.connectionStatus() === 'SEARCHING') {
-      <button class="cancel-btn" (click)="gameService.cancelSearch()">CANCEL SEARCH</button>
-    }
+<div class="lobby-screen">
+  <div class="radar-container" [class.scanning]="gameService.connectionStatus() === 'SEARCHING'">
+    <div class="radar-sweep"></div>
+    <div class="radar-dot"></div>
   </div>
-}
+
+  <h1>Human Or Bot Test</h1>
+  <div class="intro-text">
+    <p>Identify the Human. Expose the AI.</p>
+    <p class="highlight">Think you can tell the difference?</p>
+  </div>
+
+  <button class="play-btn" (click)="gameService.findMatch()"
+    [disabled]="gameService.connectionStatus() === 'SEARCHING'">
+    @if (gameService.connectionStatus() === 'SEARCHING') {
+    <span class="countdown">{{ gameService.searchSeconds() }}</span>
+    <span class="sub-text">SCANNING...</span>
+    } @else {
+    START INTERROGATION
+    }
+  </button>
+
+  <button class="how-to-btn" (click)="navigateToHowToPlay()">How to Play</button>
+
+  @if (gameService.connectionStatus() === 'SEARCHING') {
+  <button class="cancel-btn" (click)="gameService.cancelSearch()">CANCEL SEARCH</button>
+  }
+</div>

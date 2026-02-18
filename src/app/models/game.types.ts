@@ -9,5 +9,5 @@ export interface Message {
 
 export const GAME_LIMITS = {
   MAX_MESSAGES: 10,
-  TOTAL_TIME_SECONDS: 120
+  TOTAL_TIME_SECONDS: 12000
 };

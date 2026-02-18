@@ -2,14 +2,13 @@ import { Component, effect, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GameService } from '../../services/game-service';
-import { Instruction } from '../instruction/instruction';
 import {MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, Instruction, MatDialogModule],
+  imports: [CommonModule, FormsModule, MatDialogModule],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
