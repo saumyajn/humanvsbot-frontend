@@ -1,17 +1,19 @@
-import { Component, effect, ElementRef, inject, ViewChild, signal, AfterViewInit } from '@angular/core';
+import { Component, effect, ElementRef, inject, ViewChild, signal, AfterViewInit, OnDestroy } from '@angular/core';
 import { GameService } from '../../services/game-service';
 import { ApiService } from '../../services/api-service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,MatButtonModule],
   templateUrl: './game.html',
   styleUrl: './game.scss',
 })
-export class Game implements AfterViewInit {
+export class Game implements AfterViewInit, OnDestroy {
   public gameService = inject(GameService);
   private apiService = inject(ApiService);
   
@@ -22,10 +24,11 @@ export class Game implements AfterViewInit {
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
   @ViewChild('chatInput') chatInput!: ElementRef<HTMLInputElement>;
 
-  constructor() {
+  constructor(private router: Router ) {
     effect(() => {
+      // Performance: Only trigger scroll if there are actually new messages
       if (this.gameService.messages().length > 0) {
-        setTimeout(() => this.scrollToBottom(), 50);
+        this.scrollToBottom();
       }
     });
   }
@@ -35,8 +38,13 @@ export class Game implements AfterViewInit {
     this.focusInput();
   }
 
+  ngOnDestroy() {
+    // Redirect/Cleanup: Ensure socket listeners or intervals are cleared
+    // The GameService handles most, but component-specific logic should go here.
+  }
+
   handleSendMessage() {
-    if (!this.messageInput.trim()) return;
+    if (!this.messageInput.trim() || this.gameService.isGameOver()) return;
     this.gameService.sendMessage(this.messageInput);
     this.messageInput = '';
   }
@@ -47,7 +55,7 @@ export class Game implements AfterViewInit {
       const result = await this.apiService.submitGuess(this.gameService.roomId(), choice);
       this.gameResult.set(result);
     } catch (err) {
-      console.error('Error revealing identity:', err);
+      console.error('Failed to submit guess', err);
     } finally {
       this.isRevealing.set(false);
     }
@@ -58,8 +66,17 @@ export class Game implements AfterViewInit {
   }
 
   private scrollToBottom() {
-    try {
-      this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
-    } catch {}
+    // Use requestAnimationFrame for smoother performance during browser repaints
+    requestAnimationFrame(() => {
+      try {
+        const el = this.scrollContainer.nativeElement;
+        el.scrollTop = el.scrollHeight;
+      } catch (err) {}
+    });
+  }
+  returnToLobby() {
+    console.log('Returning to lobby...');
+    this.gameService.leaveGame();
+    this.router.navigate(['/']);
   }
 }

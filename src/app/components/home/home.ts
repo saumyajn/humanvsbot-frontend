@@ -3,10 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GameService } from '../../services/game-service';
 import { Instruction } from '../instruction/instruction';
-import { Game } from '../game/game';
-import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import {MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-
+import { MatButtonModule } from '@angular/material/button';
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -41,7 +40,7 @@ export class Home {
 @Component({
   selector: 'dialog-confirm-lobby',
   standalone: true,
-  imports: [MatDialogModule],
+  imports: [MatDialogModule, MatButtonModule],
   templateUrl: './dialog-confirm-lobby.html',
 })
 export class DialogConfirmLobby {

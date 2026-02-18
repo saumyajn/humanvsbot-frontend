@@ -1,46 +1,63 @@
 <div class="game-wrapper">
-  <div class="header" *ngIf="gameService.connectionStatus() === 'MATCHED'">
+  @if (gameService.connectionStatus() === 'MATCHED') {
+  <div class="header">
     <span>⏱ {{ gameService.gameTimer() }}s</span>
     <span>💬 {{ gameService.messageCount() }}/10</span>
   </div>
+  }
 
   <div class="chat-area" #scrollContainer>
     @for (msg of gameService.messages(); track msg.timestamp) {
-      <div [class]="msg.sender === 'system' ? 'system-msg' : 'msg-row ' + (msg.sender === 'me' ? 'me' : 'them')">
-        @if (msg.sender === 'opponent') {
-          <img [src]="gameService.opponentAvatarUrl()" class="avatar">
-        }
-        
-        <div class="bubble">
-          {{ msg.text }}
-          <small>{{ msg.timestamp | date:'shortTime' }}</small>
-        </div>
+    <div [class]="msg.sender === 'system' ? 'system-msg' : 'msg-row ' + (msg.sender === 'me' ? 'me' : 'them')">
+      @if (msg.sender === 'opponent') {
+      <img [src]="gameService.opponentAvatarUrl()" class="avatar">
+      }
 
-        @if (msg.sender === 'me') {
-          <img [src]="gameService.myAvatarUrl()" class="avatar">
-        }
+      <div class="bubble">
+        {{ msg.text }}
+        <small>{{ msg.timestamp | date:'shortTime' }}</small>
       </div>
+
+      @if (msg.sender === 'me') {
+      <img [src]="gameService.myAvatarUrl()" class="avatar">
+      }
+    </div>
     }
   </div>
 
-  <div class="input-bar" *ngIf="!gameService.isGameOver()">
+  @if (!gameService.isGameOver() && gameService.connectionStatus() === 'MATCHED') {
+  <div class="input-bar">
     <input #chatInput [(ngModel)]="messageInput" (keyup.enter)="handleSendMessage()" placeholder="Expose the bot...">
     <button (click)="handleSendMessage()" [disabled]="!messageInput.trim()">Send</button>
   </div>
-
-  <div class="overlay" *ngIf="gameService.isGameOver() && !gameResult()">
+  }
+  @else {
+    <div class="message-box">
+      <p class="main-text">No active game detected.</p>
+      <p class="sub-text">Please return to the lobby and start a new interrogation.</p>
+      <button (click)="returnToLobby()">RETURN TO LOBBY</button>
+    </div>
+  }
+  @if (gameService.isGameOver() && !gameResult()) {
+  <div class="overlay">
     <div class="modal">
       <h2>Interrogation Over</h2>
       <p>Cast your verdict. Who were you talking to?</p>
-      <div class="btn-group" *ngIf="!isRevealing()">
+      @if(!isRevealing()) {
+      <div class="btn-group">
         <button class="human" (click)="selectIdentity('Human')">BIOLOGICAL HUMAN</button>
         <button class="bot" (click)="selectIdentity('AI')">AI MODEL</button>
       </div>
-      <p *ngIf="isRevealing()" class="loading">Analyzing neural patterns...</p>
+      }
+      @if(isRevealing()) {
+      <p class="revealing">Revealing the truth...</p>
+      }
+    
     </div>
   </div>
-
-  <div class="overlay" *ngIf="gameResult()">
+  }
+  @if(gameResult()) {
+  <div class="overlay">
     <div class="modal result">
       <h1 [class.correct]="gameResult().correct">
         {{ gameResult().correct ? 'SUCCESS!' : 'FAILED!' }}
@@ -49,4 +66,5 @@
       <button class="primary-btn" (click)="gameService.leaveGame()">RETURN TO LOBBY</button>
     </div>
   </div>
+  }
 </div>
