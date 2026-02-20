@@ -1,19 +1,18 @@
 <div class="game-wrapper">
-  @if (gameService.connectionStatus() === 'MATCHED') {
+  @if (!gameService.isGameOver() && gameService.connectionStatus() === 'MATCHED') {
   <div class="timer-info">
-    <span>⏱ {{ gameService.gameTimer() }}s</span> 
+    <span>⏱ {{ gameService.gameTimer() }}s</span>
     <span>💬 {{ gameService.messageCount() }}/10</span>
+    <span class="make-guess" (click)="makeGuess()">Make a guess</span>
   </div>
-  }
-
-<div class="chat-area" #scrollContainer style="overflow-y: auto">
-  @for (msg of gameService.messages(); track msg.timestamp) {
+  <div class="chat-area" #scrollContainer>
+    @for (msg of gameService.messages(); track msg.timestamp) {
     <div [class]="msg.sender === 'system' ? 'system-msg-row' : 'msg-row ' + (msg.sender === 'me' ? 'me' : 'them')">
-      
+
       @if (msg.sender === 'opponent') {
-        <div class="avatar-container">
-          <img [src]="gameService.opponentAvatarUrl()" class="avatar" alt="Bot">
-        </div>
+      <div class="avatar-container">
+        <img [src]="gameService.opponentAvatarUrl()" class="avatar" alt="Bot">
+      </div>
       }
 
       <div class="bubble-wrapper">
@@ -24,42 +23,44 @@
       </div>
 
       @if (msg.sender === 'me') {
-        <div class="avatar-container">
-          <img [src]="gameService.myAvatarUrl()" class="avatar" alt="User">
-        </div>
+      <div class="avatar-container">
+        <img [src]="gameService.myAvatarUrl()" class="avatar" alt="User">
+      </div>
       }
     </div>
-  }
-</div>
+    }
+  </div>
 
-  @if (!gameService.isGameOver() && gameService.connectionStatus() === 'MATCHED') {
+
   <div class="input-bar">
-    <input class="input-box" #chatInput [(ngModel)]="messageInput" (keyup.enter)="handleSendMessage()" (keydown.enter)="$event.preventDefault()" placeholder="Expose the bot...">
+    <input class="input-box" #chatInput [(ngModel)]="messageInput" (keyup.enter)="handleSendMessage()"
+      (keydown.enter)="$event.preventDefault()" placeholder="Expose the bot...">
     <button class="send-btn" (click)="handleSendMessage()" [disabled]="!messageInput.trim()">Send</button>
   </div>
   }
-  @else {
-    <div class="message-box">
-      <p class="main-text">No active game detected.</p>
-      <p class="sub-text">Please return to the lobby and start a new interrogation.</p>
-      <button (click)="returnToLobby()">RETURN TO LOBBY</button>
-    </div>
+  @else if (gameService.connectionStatus() !== 'MATCHED') {
+  <div class="message-box">
+    <p class="main-text">No active game detected.</p>
+    <p class="sub-text">Please return to the lobby and start a new interrogation.</p>
+    <button class="returnToLobby" (click)="returnToLobby()">RETURN TO LOBBY</button>
+  </div>
   }
-  @if (gameService.isGameOver() && !gameResult()) {
+
+  @if (makeGuessClicked() && !gameResult() || gameService.isGameOver()) {
   <div class="overlay">
     <div class="modal">
       <h2>Interrogation Over</h2>
       <p>Cast your verdict. Who were you talking to?</p>
       @if(!isRevealing()) {
       <div class="btn-group">
-        <button class="human" (click)="selectIdentity('Human')">BIOLOGICAL HUMAN</button>
+        <button class="human" (click)="selectIdentity('Human')">REAL HUMAN</button>
         <button class="bot" (click)="selectIdentity('AI')">AI MODEL</button>
       </div>
       }
       @if(isRevealing()) {
       <p class="revealing">Revealing the truth...</p>
       }
-    
+
     </div>
   </div>
   }
@@ -70,7 +71,7 @@
         {{ gameResult().correct ? 'SUCCESS!' : 'FAILED!' }}
       </h1>
       <p>The entity was actually a <strong>{{ gameResult().actualRole }}</strong>.</p>
-      <button class="primary-btn" (click)="gameService.leaveGame()">RETURN TO LOBBY</button>
+      <button mat-button class="primary-btn" (click)="returnToLobby()">RETURN TO LOBBY</button>
     </div>
   </div>
   }

@@ -18,11 +18,11 @@
     } @else {
     START INTERROGATION
     }
-  </button>
+  </button> @if (gameService.connectionStatus() === 'SEARCHING') {
+  <button class="cancel-btn" (click)="gameService.cancelSearch()">CANCEL SEARCH</button>
+  }
 
   <button class="how-to-btn" (click)="navigateToHowToPlay()">How to Play</button>
 
-  @if (gameService.connectionStatus() === 'SEARCHING') {
-  <button class="cancel-btn" (click)="gameService.cancelSearch()">CANCEL SEARCH</button>
-  }
+
 </div>

@@ -9,28 +9,30 @@ import { MatButtonModule } from '@angular/material/button';
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [CommonModule, FormsModule,MatButtonModule],
+  imports: [CommonModule, FormsModule, MatButtonModule],
   templateUrl: './game.html',
   styleUrl: './game.scss',
 })
 export class Game implements AfterViewInit, OnDestroy {
   public gameService = inject(GameService);
   private apiService = inject(ApiService);
-  
+
   messageInput = '';
   isRevealing = signal(false);
   gameResult = signal<any>(null);
+  makeGuessClicked = signal(false);
 
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
   @ViewChild('chatInput') chatInput!: ElementRef<HTMLInputElement>;
 
-  constructor(private router: Router ) {
+  constructor(private router: Router) {
     effect(() => {
       // Performance: Only trigger scroll if there are actually new messages
       if (this.gameService.messages().length > 0) {
         this.scrollToBottom();
       }
     });
+
   }
 
   ngAfterViewInit() {
@@ -54,6 +56,7 @@ export class Game implements AfterViewInit, OnDestroy {
     try {
       const result = await this.apiService.submitGuess(this.gameService.roomId(), choice);
       this.gameResult.set(result);
+      this.gameService.isGameOver.set(true); // Game is truly over once the guess is submitted and the result is received.
     } catch (err) {
       console.error('Failed to submit guess', err);
     } finally {
@@ -61,6 +64,11 @@ export class Game implements AfterViewInit, OnDestroy {
     }
   }
 
+  makeGuess() {
+    console.log('Make a guess clicked');
+    this.gameService.isGameOver.set(true);
+    this.makeGuessClicked.set(true);
+  }
   private focusInput() {
     this.chatInput?.nativeElement.focus();
   }
@@ -71,7 +79,7 @@ export class Game implements AfterViewInit, OnDestroy {
       try {
         const el = this.scrollContainer.nativeElement;
         el.scrollTop = el.scrollHeight;
-      } catch (err) {}
+      } catch (err) { }
     });
   }
   returnToLobby() {

@@ -41,6 +41,7 @@
     .title-group {
       display: flex;
       flex-direction: column;
+      cursor: pointer;
 
       h1 {
         margin: 0;
@@ -90,7 +91,7 @@
 
 .exit-btn {
   background: rgba(255, 71, 87, 0.15);
-  color: #ff4757;
+  color: var(--negative-red);
   border: 1px solid rgba(255, 71, 87, 0.3);
   padding: 6px 14px;
   border-radius: 6px;
