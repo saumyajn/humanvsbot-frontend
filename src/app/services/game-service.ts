@@ -19,7 +19,7 @@ export class GameService {
   public connectionStatus = signal<'DISCONNECTED' | 'SEARCHING' | 'MATCHED'>('DISCONNECTED');
   public messages = signal<ChatMessage[]>([]);
   public messageCount = computed(() => this.messages().filter(m => m.sender !== 'system').length);
-  public gameTimer = signal<number>(12000);
+  public gameTimer = signal<number>(1200);
   public isGameOver = signal<boolean>(false);
   public searchSeconds = signal<number>(10);
   public roomId = signal<string | null>(null);
@@ -52,9 +52,11 @@ export class GameService {
       this.onMatchFound.emit();
     });
 
-    this.socket.on('new_message', (msg: any) => {
+    this.socket.on('receive_message', (msg: any) => {
       if (msg.sender !== 'me') {
-        this.addMessage(msg.text, 'opponent');
+        const senderRole = msg.sender === 'system' ? 'system' : 'opponent';
+        console.log(`Received message from ${senderRole}: ${msg.text}`);
+        this.addMessage(msg.text, senderRole);
         this.checkMessageLimit();
       }
     });
@@ -78,7 +80,7 @@ export class GameService {
   private startGame() {
     this.messages.set([]);
     this.isGameOver.set(false);
-    this.gameTimer.set(12000);
+    this.gameTimer.set(1200);
     this.myAvatarUrl.set(this.apiService.getAvatarUrl('me' + Date.now()));
     this.opponentAvatarUrl.set(this.apiService.getAvatarUrl('opp' + Date.now()));
     
@@ -122,6 +124,7 @@ export class GameService {
   }
 
   private addMessage(text: string, sender: 'me' | 'opponent' | 'system') {
+    console.log(`Adding message from ${sender}: ${text}`);
     this.messages.update(m => [...m, { text, sender, timestamp: Date.now() }]);
   }
 

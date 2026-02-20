@@ -55,7 +55,9 @@ export class Game implements AfterViewInit, OnDestroy {
     this.isRevealing.set(true);
     try {
       const result = await this.apiService.submitGuess(this.gameService.roomId(), choice);
+      console.log("result:", result);
       this.gameResult.set(result);
+      console.log("Game result set:", this.gameResult());
       this.gameService.isGameOver.set(true); // Game is truly over once the guess is submitted and the result is received.
     } catch (err) {
       console.error('Failed to submit guess', err);

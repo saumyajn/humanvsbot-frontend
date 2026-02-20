@@ -46,7 +46,7 @@
   </div>
   }
 
-  @if (makeGuessClicked() && !gameResult() || gameService.isGameOver()) {
+  @if ((makeGuessClicked() || gameService.isGameOver()) && !gameResult()) {
   <div class="overlay">
     <div class="modal">
       <h2>Interrogation Over</h2>
@@ -66,12 +66,15 @@
   }
   @if(gameResult()) {
   <div class="overlay">
-    <div class="modal result">
-      <h1 [class.correct]="gameResult().correct">
-        {{ gameResult().correct ? 'SUCCESS!' : 'FAILED!' }}
+    <div class="message-box">
+      <h1 [class]="gameResult().isCorrect ? 'success' : 'failure'">
+        {{ gameResult().isCorrect ? 'SUCCESS!' : 'FAILED!' }}
       </h1>
-      <p>The entity was actually a <strong>{{ gameResult().actualRole }}</strong>.</p>
-      <button mat-button class="primary-btn" (click)="returnToLobby()">RETURN TO LOBBY</button>
+      <p>Your opponent was actually:  <strong>{{ gameResult().actualIdentity |uppercase }}</strong>.</p>
+      <div class="btn-group">
+        <button class="return-btn" (click)="returnToLobby()">RETURN TO LOBBY</button>
+      </div>
+      
     </div>
   </div>
   }

@@ -52,7 +52,6 @@
   .system-msg-row {
     align-self: center;
     margin: 1rem 0;
-
     font-size: 0.8rem;
     color: var(--primary-cyan);
     background: rgba(0, 242, 255, 0.08);
@@ -97,7 +96,7 @@
     }
 
     &.me {
-      align-self: flex-end;
+      justify-self: right;
 
 
       .bubble {
@@ -206,6 +205,12 @@
       border: none;
       color: white;
       text-transform: uppercase;
+
+      &.return-btn {
+        background: rgba(255, 71, 87, 0.15);
+    
+
+      }
 
       &.human {
         background-color: #28a7468e;
