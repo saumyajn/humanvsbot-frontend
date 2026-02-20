@@ -18,7 +18,7 @@ export class GameService {
   // --- SIGNALS ---
   public connectionStatus = signal<'DISCONNECTED' | 'SEARCHING' | 'MATCHED'>('DISCONNECTED');
   public messages = signal<ChatMessage[]>([]);
-  public messageCount = computed(() => this.messages().filter(m => m.sender !== 'system').length);
+public messageCount = computed(() => this.messages().filter(m => m.sender === 'me').length);
   public gameTimer = signal<number>(1200);
   public isGameOver = signal<boolean>(false);
   public searchSeconds = signal<number>(10);
@@ -58,6 +58,15 @@ export class GameService {
         console.log(`Received message from ${senderRole}: ${msg.text}`);
         this.addMessage(msg.text, senderRole);
         this.checkMessageLimit();
+      }
+    });
+    
+    this.socket.on('opponent_guessed', () => {
+      if (!this.isGameOver()) {
+        clearInterval(this.gameInterval);
+        this.isGameOver.set(true);
+        this.addMessage('Opponent has made their guess! The session is over.', 'system');
+        this.addMessage('Cast your verdict now.', 'system');
       }
     });
   }
