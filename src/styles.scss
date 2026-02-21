@@ -30,6 +30,8 @@
     --bubble-other-text: #111b21;
     --input-bg: #ffffff;
     --input-border: #ddd;
+    --positive-green: #0f7014;
+    --negative-red: #f93e4d;
   }
 }
 
@@ -41,7 +43,7 @@ body {
   width: 100%;
   overflow: hidden; // Prevents accidental "bounce" scrolling on mobile
   background-color: #1a1a2e; // Matches your theme so there's no "white flash"
- 
+
 }
 
 // 2. Ensure the Angular root tag fills the screen

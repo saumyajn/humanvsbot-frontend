@@ -25,6 +25,10 @@
     color: var(--text-muted);
     font-weight: bold;
 
+    @media (prefers-color-scheme: light) {
+      background: rgba(129, 130, 129, 0.204);
+     
+    }
   }
 
   .make-guess {
@@ -34,6 +38,11 @@
     color: var(--positive-green);
     font-weight: 800;
     cursor: pointer;
+
+    @media (prefers-color-scheme: light) {
+      background: rgba(74, 188, 74, 0.204);
+      border: var(--main-green) solid 1px;
+    }
 
     &:hover {
       background: var(--positive-green);
@@ -78,6 +87,9 @@
       background-color: #333;
       border: 2px solid var(--input-border);
       object-fit: cover;
+       @media (prefers-color-scheme: light) {
+        background-color: rgb(2, 128, 170);
+        border: 2px solid rgba(120, 119, 119, 0.1);}
     }
 
     .bubble {
@@ -154,6 +166,10 @@
       border-color: var(--primary-cyan);
       background: rgba(0, 0, 0, 0.5);
       box-shadow: 0 0 0 2px rgba(0, 242, 255, 0.1);
+       @media (prefers-color-scheme: light) {
+        background: rgba(255, 255, 255, 0.5);
+        border-color: var(--primary-cyan);
+        box-shadow: 0 0 0 2px rgba(5, 210, 87, 0.1);} 
     }
   }
 
@@ -208,12 +224,12 @@
 
       &.return-btn {
         background: rgba(255, 71, 87, 0.15);
-    
+
 
       }
 
       &.human {
-        background-color: #28a7468e;
+        background-color: #1c8535d0;
 
         &:hover {
           background-color: #218838;
@@ -221,7 +237,7 @@
       }
 
       &.bot {
-        background-color: #dc35468f;
+        background-color: #dc3546b4;
 
         &:hover {
           background-color: #c82333;

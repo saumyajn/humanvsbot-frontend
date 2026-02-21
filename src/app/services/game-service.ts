@@ -1,4 +1,4 @@
-import { effect, EventEmitter, Injectable, signal, inject, DestroyRef, computed } from '@angular/core';
+import { effect, EventEmitter, Injectable, signal, inject, DestroyRef, computed, NgZone } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { ApiService } from './api-service';
 
@@ -14,13 +14,13 @@ export class GameService {
   private apiService = inject(ApiService);
   private destroyRef = inject(DestroyRef);
   private readonly API_URL = 'https://humanvsbot-middleware.onrender.com';
-
+  private ngZone = inject(NgZone);
   // --- SIGNALS ---
   public connectionStatus = signal<'DISCONNECTED' | 'SEARCHING' | 'MATCHED'>('DISCONNECTED');
 
   public messages = signal<ChatMessage[]>([]);
   public messageCount = computed(() => this.messages().filter(m => m.sender === 'me').length);
-  public gameTimer = signal<number>(120);
+  public gameTimer = signal<number>(1200);
   public isGameOver = signal<boolean>(false);
   public searchSeconds = signal<number>(10);
 
@@ -47,29 +47,35 @@ export class GameService {
 
   private setupSocketListeners() {
     this.socket.on('match_found', (data) => {
-      this.stopSearchTimer();
-      this.roomId.set(data.roomId);
-      this.connectionStatus.set('MATCHED');
-      this.startGame();
-      this.onMatchFound.emit();
+      this.ngZone.run(() => {
+        this.stopSearchTimer();
+        this.roomId.set(data.roomId);
+        this.connectionStatus.set('MATCHED');
+        this.startGame();
+        this.onMatchFound.emit();
+      });
     });
 
     this.socket.on('receive_message', (msg: any) => {
-      if (msg.sender !== 'me') {
-        const senderRole = msg.sender === 'system' ? 'system' : 'opponent';
-        console.log(`Received message from ${senderRole}: ${msg.text}`);
-        this.addMessage(msg.text, senderRole);
-        this.checkMessageLimit();
-      }
+      this.ngZone.run(() => {
+        if (msg.sender !== 'me') {
+          const senderRole = msg.sender === 'system' ? 'system' : 'opponent';
+          console.log(`Received message from ${senderRole}: ${msg.text}`);
+          this.addMessage(msg.text, senderRole);
+          this.checkMessageLimit();
+        }
+      });
     });
 
     this.socket.on('opponent_guessed', () => {
-      if (!this.isGameOver()) {
-        clearInterval(this.gameInterval);
-        this.isGameOver.set(true);
-        this.addMessage('Opponent has made their guess! The session is over.', 'system');
-        this.addMessage('Cast your verdict now.', 'system');
-      }
+      this.ngZone.run(() => {
+        if (!this.isGameOver()) {
+          clearInterval(this.gameInterval);
+          this.isGameOver.set(true);
+          this.addMessage('Opponent has made their guess! The session is over.', 'system');
+          this.addMessage('Cast your verdict now.', 'system');
+        }
+      });
     });
   }
 
@@ -77,11 +83,25 @@ export class GameService {
   public findMatch() {
     this.connectionStatus.set('SEARCHING');
     this.searchSeconds.set(10);
+    if (this.searchInterval) {
+      clearInterval(this.searchInterval);
+    }
     this.socket.emit('find_match');
-    this.searchInterval = setInterval(() => this.searchSeconds.update(s => s - 1), 1000);
+    this.searchInterval = setInterval(() => {
+      const currentSeconds = this.searchSeconds();
+      if (currentSeconds <= 1) {
+        this.searchSeconds.set(0);
+        this.stopSearchTimer();
+      } else {
+        this.searchSeconds.set(currentSeconds - 1);
+      }
+    }, 1000);
   }
 
   public cancelSearch() {
+    if (this.searchInterval) {
+      clearInterval(this.searchInterval);
+    }
     this.stopSearchTimer();
     this.socket.emit('cancel_search');
     this.connectionStatus.set('DISCONNECTED');
@@ -91,7 +111,7 @@ export class GameService {
   private startGame() {
     this.messages.set([]);
     this.isGameOver.set(false);
-    this.gameTimer.set(120);
+    this.gameTimer.set(1200);
     this.myAvatarUrl.set(this.apiService.getAvatarUrl('me' + Date.now()));
     this.opponentAvatarUrl.set(this.apiService.getAvatarUrl('opp' + Date.now()));
 
