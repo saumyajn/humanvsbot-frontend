@@ -6,6 +6,7 @@
   align-items: center;
   padding: 2rem;
   text-align: center;
+  // background-color: #1a1a2e;
 
   h1 {
     font-size: 2.5rem;
@@ -13,7 +14,7 @@
     letter-spacing: 2px;
     margin: 2rem 0 0.5rem 0;
     text-transform: uppercase;
-    background: linear-gradient(to right, #00f260, #0575e6);
+    background:var(--main-header);
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -28,7 +29,7 @@
     }
 
     .highlight {
-      color: #00f260;
+      color: var( --main-green);
       font-weight: 700;
       letter-spacing: 1px;
     }
@@ -51,9 +52,9 @@
       transform: translate(-50%, -50%);
       width: 8px;
       height: 8px;
-      background: #00f260;
+      background: var( --main-green);
       border-radius: 50%;
-      box-shadow: 0 0 10px #00f260;
+      box-shadow: 0 0 10px var( --main-green);
     }
 
     &.scanning .radar-sweep {
@@ -92,7 +93,7 @@
 
     &:disabled {
       background: rgba(255, 255, 255, 0.1);
-      color: #00f260;
+      color: var( --main-green);
       border: 1px solid rgba(0, 242, 96, 0.3);
     }
 

@@ -25,7 +25,7 @@
         padding: 0;
 
         &:hover {
-            color: #00f260;
+            color: var( --main-green);
         }
 
         .icon {
@@ -61,7 +61,7 @@
     text-align: left;
 
     h3 {
-        color: #00f260; // Cyber green
+        color: var( --main-green); // Cyber green
         font-size: 0.9rem;
         text-transform: uppercase;
         letter-spacing: 2px;
