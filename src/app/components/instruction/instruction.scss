@@ -14,7 +14,7 @@
     .minimal-back {
         background: none;
         border: none;
-        color: var(--text-muted);
+        color: var(--text-main);
         font-size: 0.8rem;
         font-weight: 700;
         letter-spacing: 1px;
@@ -101,6 +101,8 @@
             margin: 0 0 5px 0;
             font-size: 1.05rem;
             color: #fff;
+             @media (prefers-color-scheme: light) {
+                color: var(--bubble-text-me);}
         }
 
         p {

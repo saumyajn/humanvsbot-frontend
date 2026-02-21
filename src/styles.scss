@@ -18,12 +18,12 @@
 
 @media (prefers-color-scheme: light) {
   :root {
-    --bg-gradient: linear-gradient(135deg, #a6c8fb 0%, #cbf3da 100%);
+    --bg-gradient: linear-gradient(135deg, #b7b8f4 0%, #c8f8da 100%);
     --main-header: linear-gradient(to right, #069341, #1345a2);
-    --main-green: #069341;
+    --main-green: #017b34;
     --header-bg: #055054;
-    --text-main: #383636;
-    --text-muted: #848181;
+    --text-main: #1e1a1a;
+    --text-muted: #757474;
     --bubble-me: #d9fdd3;
     --bubble-me-text: #111b21;
     --bubble-other: #ffffff;
@@ -41,6 +41,7 @@ body {
   width: 100%;
   overflow: hidden; // Prevents accidental "bounce" scrolling on mobile
   background-color: #1a1a2e; // Matches your theme so there's no "white flash"
+ 
 }
 
 // 2. Ensure the Angular root tag fills the screen
@@ -48,4 +49,11 @@ app-root {
   display: block;
   height: 100%;
   width: 100%;
+  padding-top: env(safe-area-inset-top, 20px);
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+
+
+
 }
