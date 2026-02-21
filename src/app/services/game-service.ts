@@ -17,11 +17,13 @@ export class GameService {
 
   // --- SIGNALS ---
   public connectionStatus = signal<'DISCONNECTED' | 'SEARCHING' | 'MATCHED'>('DISCONNECTED');
+
   public messages = signal<ChatMessage[]>([]);
-public messageCount = computed(() => this.messages().filter(m => m.sender === 'me').length);
-  public gameTimer = signal<number>(1200);
+  public messageCount = computed(() => this.messages().filter(m => m.sender === 'me').length);
+  public gameTimer = signal<number>(120);
   public isGameOver = signal<boolean>(false);
   public searchSeconds = signal<number>(10);
+
   public roomId = signal<string | null>(null);
   public myAvatarUrl = signal<string>('');
   public opponentAvatarUrl = signal<string>('');
@@ -60,7 +62,7 @@ public messageCount = computed(() => this.messages().filter(m => m.sender === 'm
         this.checkMessageLimit();
       }
     });
-    
+
     this.socket.on('opponent_guessed', () => {
       if (!this.isGameOver()) {
         clearInterval(this.gameInterval);
@@ -89,10 +91,10 @@ public messageCount = computed(() => this.messages().filter(m => m.sender === 'm
   private startGame() {
     this.messages.set([]);
     this.isGameOver.set(false);
-    this.gameTimer.set(1200);
+    this.gameTimer.set(120);
     this.myAvatarUrl.set(this.apiService.getAvatarUrl('me' + Date.now()));
     this.opponentAvatarUrl.set(this.apiService.getAvatarUrl('opp' + Date.now()));
-    
+
     this.gameInterval = setInterval(() => {
       this.gameTimer.update(v => v > 0 ? v - 1 : 0);
     }, 1000);
