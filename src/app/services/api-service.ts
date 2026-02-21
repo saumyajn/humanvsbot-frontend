@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private readonly API_URL = 'http://localhost:3000';
+  private readonly API_URL = 'https://humanvsbot-middleware.onrender.com'; // Update with your actual backend URL
 
   /** Submit the final guess to the backend */
   async submitGuess(roomId: string | null, choice: 'AI' | 'Human') {

@@ -13,7 +13,7 @@ export class GameService {
   private socket: Socket;
   private apiService = inject(ApiService);
   private destroyRef = inject(DestroyRef);
-  private readonly API_URL = 'http://localhost:3000';
+  private readonly API_URL = 'https://humanvsbot-middleware.onrender.com';
 
   // --- SIGNALS ---
   public connectionStatus = signal<'DISCONNECTED' | 'SEARCHING' | 'MATCHED'>('DISCONNECTED');
