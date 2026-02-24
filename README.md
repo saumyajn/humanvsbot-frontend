@@ -1,59 +1,45 @@
-# HumanvsbotFrontend
+# Human Or Bot Test 🤖👤
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.4.
+A real-time, cross-platform Turing Test application designed to challenge human perception. Players are matched in 1v1 chat sessions where they must interrogate their opponent to determine if they are interacting with a human or an AI.
 
-## Development server
+## 🚀 Technical Stack
 
-To start a local development server, run:
+- **Frontend:** Angular 19+, Ionic/Capacitor (for Android/Mobile)
+- **Middleware:** Node.js, Socket.io (Real-time communication)
+- **Backend:** Python (FastAPI/Flask) for core game logic and AI integration
+- **Infrastructure:** Render (Hosting), Vercel (Frontend Deployment)
 
-```bash
-ng serve
-```
+## ✨ Key Features
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- **Matchmaking Radar:** A custom-built UI that scans for global opponents in real-time.
+- **State Management:** Uses Angular's `NgZone` and specialized services to handle asynchronous socket events without UI lag.
+- **Mobile-Native Experience:** Built with Capacitor for a high-performance Android experience, including hardware safe-area support.
+- **Live Heartbeat:** Implemented external health-check monitoring to maintain 24/7 uptime on Render's free tier.
 
-## Code scaffolding
+## 🛠️ Installation & Setup
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Prerequisites
+- Node.js v20+
+- Python 3.12+
+- Android Studio (for mobile builds)
 
-```bash
-ng generate component component-name
-```
+### Frontend Setup
+1. Clone the repo.
+2. Run `npm install`.
+3. Build the project: `npm run build`.
+4. Sync with Android: `npx cap sync android`.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### Backend Setup
+1. Navigate to the `/backend` directory.
+2. Install dependencies: `pip install -r requirements.txt`.
+3. Start the server: `uvicorn main:app --reload`.
 
-```bash
-ng generate --help
-```
+## 🌐 Deployment Logic
 
-## Building
+The application uses a distributed architecture:
+- **Client:** Hosted on Vercel for fast global delivery.
+- **WebSocket Middleware:** Hosted on Render (Node.js) to manage active game states.
+- **AI Core:** Python-based service on Render, kept awake via automated health-pings to prevent cold starts.
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+---
+Created with ❤️ by Saumya
