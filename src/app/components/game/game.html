@@ -29,6 +29,27 @@
       }
     </div>
     }
+    @if (gameService.typingSender(); as typingSender) {
+    <div [class]="'msg-row ' + (typingSender === 'me' ? 'me' : 'them')">
+      @if (typingSender === 'opponent') {
+      <div class="avatar-container">
+        <img [src]="gameService.opponentAvatarUrl()" class="avatar" alt="Bot">
+      </div>
+      }
+      <div class="bubble-wrapper">
+        <div class="bubble">
+          <div class="typing-indicator">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+      @if (typingSender === 'me') {
+      <div class="avatar-container">
+        <img [src]="gameService.myAvatarUrl()" class="avatar" alt="User">
+      </div>
+      }
+    </div>
+    }
   </div>
 
 

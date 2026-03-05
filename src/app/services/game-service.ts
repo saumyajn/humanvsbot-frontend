@@ -19,6 +19,7 @@ export class GameService {
   public connectionStatus = signal<'DISCONNECTED' | 'SEARCHING' | 'MATCHED'>('DISCONNECTED');
 
   public messages = signal<ChatMessage[]>([]);
+  public typingSender = signal<'me' | 'opponent' | null>(null);
   public messageCount = computed(() => this.messages().filter(m => m.sender === 'me').length);
   public gameTimer = signal<number>(1200);
   public isGameOver = signal<boolean>(false);
@@ -60,9 +61,16 @@ export class GameService {
       this.ngZone.run(() => {
         if (msg.sender !== 'me') {
           const senderRole = msg.sender === 'system' ? 'system' : 'opponent';
-          console.log(`Received message from ${senderRole}: ${msg.text}`);
-          this.addMessage(msg.text, senderRole);
-          this.checkMessageLimit();
+          if (senderRole === 'opponent') {
+            this.typingSender.set('opponent');
+            const typingDuration = Math.floor(Math.random() * 4000) + 1000; // 1-5 seconds
+            setTimeout(() => {
+              this.typingSender.set(null);
+              this.addMessage(msg.text, senderRole);
+            }, typingDuration);
+          } else {
+            this.addMessage(msg.text, senderRole);
+          }
         }
       });
     });
@@ -122,9 +130,18 @@ export class GameService {
 
   public sendMessage(text: string) {
     if (!text.trim() || this.isGameOver()) return;
-    this.socket.emit('send_message', { roomId: this.roomId(), text });
-    this.addMessage(text, 'me');
-    this.checkMessageLimit();
+
+    this.typingSender.set('me');
+    const typingDuration = Math.floor(Math.random() * 4000) + 1000; // 1-5 seconds
+
+    setTimeout(() => {
+      this.ngZone.run(() => {
+        this.typingSender.set(null);
+        this.socket.emit('send_message', { roomId: this.roomId(), text });
+        this.addMessage(text, 'me');
+        this.checkMessageLimit();
+      });
+    }, typingDuration);
   }
 
   private checkMessageLimit() {

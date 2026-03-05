@@ -262,3 +262,42 @@
     color: white;
   }
 }
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.typing-indicator span {
+  height: 8px;
+  width: 8px;
+  background-color: #9e9ea1;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 2px;
+  animation: wave 1.3s linear infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: -1.1s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: -0.9s;
+}
+
+@keyframes wave {
+  0%,
+  60%,
+  100% {
+    transform: initial;
+  }
+  30% {
+    transform: translateY(-8px);
+  }
+}
+
+.msg-row.me .typing-indicator span {
+  /* A color that fits the 'me' bubble */
+  background-color: #555;
+}
